@@ -1,0 +1,28 @@
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Todo {
+    id        String   @id @default(uuid())
+    title     String
+    done      Boolean  @default(false)
+    tasks     Task[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Task {
+    id        String   @id @default(uuid())
+    title     String
+    done      Boolean  @default(false)
+    todo      Todo     @relation(fields: [todoId], references: [id])
+    todoId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
