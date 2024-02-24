@@ -4,17 +4,17 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const getAllTodos = async (req: Request, res: Response) => {
-  try {
-    const todos = await prisma.todo.findMany();
-    res.status(200).json(todos);
-  } catch (error) {
-    console.error("Error retrieving todos:", error);
-    res.status(500).json({ error: "Unable to retrieve todos" });
-  }
+  const todos = await prisma.todo.findMany();
+  res.status(200).json(todos);
 };
 
 export const createTodo = async (req: Request, res: Response) => {
   const { title } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: "Title is required" });
+  }
+
   const todo = await prisma.todo.create({
     data: {
       title,
