@@ -4,7 +4,14 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const getAllTodos = async (req: Request, res: Response) => {
-  const todos = await prisma.todo.findMany();
+  const todos = await prisma.todo.findMany({
+    select: {
+      id: true,
+      title: true,
+      done: true,
+      tasks: true,
+    },
+  });
   res.status(200).json(todos);
 };
 
@@ -36,6 +43,40 @@ export const updateTodo = async (req: Request, res: Response) => {
     },
   });
   res.json(todo);
+};
+
+export const addTask = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const tasksArray = req.body;
+  const task = await prisma.task.createMany({
+    data: tasksArray.map((task: any) => ({
+      todoId: id,
+      ...task,
+    })),
+  });
+  res.json(task);
+};
+
+export const updateTask = async (req: Request, res: Response) => {
+  const { taskId } = req.params;
+  const data = req.body;
+  const task = await prisma.task.updateMany({
+    where: {
+      id: taskId,
+    },
+    data,
+  });
+  res.json(task);
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
+  const { taskId } = req.params;
+  const task = await prisma.task.delete({
+    where: {
+      id: taskId,
+    },
+  });
+  res.json(task);
 };
 
 export const deleteTodo = async (req: Request, res: Response) => {

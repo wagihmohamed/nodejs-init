@@ -10,7 +10,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", todosRouter);
-
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
